@@ -58,7 +58,7 @@ const menuItemSchema = z.object({
   description: z
     .string()
     .min(5, "A descrição deve ter pelo menos 5 caracteres."),
-  price: z.number().min(0, "O preço deve ser um valor positivo."),
+  price: z.number("O preço deve ser um valor positivo."),
   category: z.enum(["petiscos", "bebidas", "sobremesas"]),
 });
 

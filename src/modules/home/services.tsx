@@ -63,7 +63,7 @@ export default function Services() {
           </CardFooter>
         </Card>
 
-        <Card className="flex flex-col justify-between border-gray-800 bg-gray-950">
+        <Card className="flex flex-col justify-between border-gray-800 bg-gray-950 opacity-50 cursor-not-allowed">
           <CardHeader>
             <div className="flex justify-center mb-4">
               <Mic className="h-12 w-12 text-red-500" />
@@ -82,8 +82,10 @@ export default function Services() {
             </p>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button variant="outline" asChild>
-              <Link href="/biblioteca">Explorar Músicas</Link>
+            <Button variant="outline" asChild disabled>
+              <Link href="/biblioteca" className="cursor-not-allowed">
+                Explorar Músicas
+              </Link>
             </Button>
           </CardFooter>
         </Card>

@@ -83,7 +83,7 @@ export default function Services() {
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button variant="outline" asChild disabled>
-              <Link href="/biblioteca" className="cursor-not-allowed">
+              <Link href="#" className="cursor-not-allowed">
                 Explorar Músicas
               </Link>
             </Button>

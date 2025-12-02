@@ -1,11 +1,37 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import {
-  Cake, Martini, Utensils
-} from "lucide-react";
 import MenuItem from "@/modules/menu/menu-item";
+import useGetAllCategories from "@/hooks/react-query/categories/get-all";
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(price);
+};
 
 export default function CardapioPage() {
+  const { data: categories, isLoading, isError } = useGetAllCategories();
+  console.log("Categories:", categories);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        Carregando...
+      </div>
+    );
+  }
+
+  if (isError || !categories) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
+        Ocorreu um erro ao carregar o cardápio.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       <main className="grow py-12 md:py-20">
@@ -17,134 +43,49 @@ export default function CardapioPage() {
             Sabores e drinks feitos para acompanhar os maiores hits.
           </p>
 
-          <Tabs defaultValue="petiscos" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-900">
-              <TabsTrigger
-                value="petiscos"
-                className="text-white data-[state=active]:text-red-400"
-              >
-                <Utensils className="mr-2 h-4 w-4" />
-                Petiscos
-              </TabsTrigger>
-              <TabsTrigger
-                value="bebidas"
-                className="text-white data-[state=active]:text-red-400"
-              >
-                <Martini className="mr-2 h-4 w-4" />
-                Bebidas
-              </TabsTrigger>
-              <TabsTrigger
-                value="sobremesas"
-                className="text-white data-[state=active]:text-red-400"
-              >
-                <Cake className="mr-2 h-4 w-4" />
-                Sobremesas
-              </TabsTrigger>
+          <Tabs
+            defaultValue={categories[0]?.titulo.toLowerCase()}
+            className="w-full"
+          >
+            <TabsList
+              className={`flex justify-center items-center w-full bg-gray-900`}
+            >
+              {categories.map((category: Categorie) => (
+                <TabsTrigger
+                  key={category.id}
+                  value={category.titulo.toLowerCase()}
+                  className="text-white data-[state=active]:text-red-400"
+                >
+                  {category.titulo}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
-            <TabsContent value="petiscos" className="mt-6">
-              <h2 className="mb-4 text-2xl font-semibold text-red-400">
-                Porções & Petiscos
-              </h2>
-              <div className="rounded-lg border border-gray-800 bg-gray-950 p-6">
-                <MenuItem
-                  name="Batata Frita Tokyokê"
-                  description="Porção generosa com cheddar e bacon crocante."
-                  price="R$ 42,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Frango a Passarinho"
-                  description="Cortes de frango fritos com alho e salsinha."
-                  price="R$ 48,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Pastelzinhos Mistos"
-                  description="12 unidades (carne, queijo e pizza)."
-                  price="R$ 39,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Tábua de Frios"
-                  description="Seleção de queijos, salames e azeitonas."
-                  price="R$ 65,00"
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="bebidas" className="mt-6">
-              <h2 className="mb-4 text-2xl font-semibold text-red-400">
-                Coquetéis da Casa
-              </h2>
-              <div className="mb-6 rounded-lg border border-gray-800 bg-gray-950 p-6">
-                <MenuItem
-                  name="Gin Tônica Clássico"
-                  description="Gin, água tônica, limão e especiarias."
-                  price="R$ 32,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Caipirinha de Saquê"
-                  description="Saquê, morango, kiwi ou maracujá."
-                  price="R$ 28,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Moscow Mule"
-                  description="Vodka, espuma de gengibre e limão."
-                  price="R$ 35,00"
-                />
-              </div>
-
-              <h2 className="mb-4 text-2xl font-semibold text-red-400">
-                Cervejas & Não-Alcoólicos
-              </h2>
-              <div className="rounded-lg border border-gray-800 bg-gray-950 p-6">
-                <MenuItem
-                  name="Heineken 600ml"
-                  description="Cerveja premium lager."
-                  price="R$ 18,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Soda Italiana"
-                  description="Maçã verde, frutas vermelhas ou limão siciliano."
-                  price="R$ 16,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Água Mineral"
-                  description="Com ou sem gás."
-                  price="R$ 6,00"
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="sobremesas" className="mt-6">
-              <h2 className="mb-4 text-2xl font-semibold text-red-400">
-                Para Adoçar
-              </h2>
-              <div className="rounded-lg border border-gray-800 bg-gray-950 p-6">
-                <MenuItem
-                  name="Petit Gâteau"
-                  description="Bolo de chocolate com sorvete de creme."
-                  price="R$ 28,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Taça Tokyokê"
-                  description="Sorvete, brigadeiro, morangos e chantilly."
-                  price="R$ 34,00"
-                />
-                <Separator className="bg-gray-800" />
-                <MenuItem
-                  name="Café Espresso"
-                  description="Para fechar a noite."
-                  price="R$ 8,00"
-                />
-              </div>
-            </TabsContent>
+            {categories.map((category: Categorie) => (
+              <TabsContent
+                key={category.id}
+                value={category.titulo.toLowerCase()}
+                className="mt-6"
+              >
+                <h2 className="mb-4 text-2xl font-semibold text-red-400">
+                  {category.titulo}
+                </h2>
+                <div className="rounded-lg border border-gray-800 bg-gray-950 p-6">
+                  {category.itens?.map((item, index) => (
+                    <div key={item.idItem}>
+                      <MenuItem
+                        name={item.nome}
+                        description={item.descricao}
+                        price={formatPrice(item.valor)}
+                      />
+                      {index < (category?.itens?.length ?? 0) - 1 && (
+                        <Separator className="bg-gray-800" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
           </Tabs>
         </div>
       </main>

@@ -10,63 +10,74 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, History, Users, XCircle } from "lucide-react";
+import { Reserva } from "@/_types/reserva";
 
-type ReservationStatus = "confirmada" | "pendente" | "concluida" | "cancelada";
+type ReservationStatus = "PENDENTE" | "CONFIRMADA" | "CANCELADA" | "CONCLUIDA";
 
 interface ReservationCardProps {
-  date: string;
-  time: string;
-  guests: string;
-  room: string;
-  status: ReservationStatus;
+  reserva: Reserva;
 }
 
-export default function ReservationCard({
-  date,
-  time,
-  guests,
-  room,
-  status,
-}: ReservationCardProps) {
+export default function ReservationCard({ reserva }: ReservationCardProps) {
   const getStatusVariant = () => {
-    switch (status) {
-      case "confirmada":
+    switch (reserva.status) {
+      case "APROVADO":
         return "default";
-      case "pendente":
+      case "PENDENTE":
         return "secondary";
-      case "cancelada":
+      case "REPROVADO":
         return "destructive";
-      case "concluida":
-        return "outline";
       default:
         return "secondary";
     }
   };
 
-  const getStatusIcon = () => {
-    switch (status) {
-      case "confirmada":
-        return <CheckCircle className="mr-1 h-3 w-3" />;
-      case "pendente":
-        return <Clock className="mr-1 h-3 w-3" />;
-      case "cancelada":
-        return <XCircle className="mr-1 h-3 w-3" />;
-      case "concluida":
-        return <History className="mr-1 h-3 w-3" />;
+  const getStatusColor = () => {
+    switch (reserva.status) {
+      case "APROVADO":
+        return "bg-green-500";
+      case "PENDENTE":
+        return "bg-yellow-500";
+      case "REPROVADO":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
   };
+
+  const getStatusIcon = () => {
+    switch (reserva.status) {
+      case "APROVADO":
+        return <CheckCircle className="mr-1 h-3 w-3" />;
+      case "PENDENTE":
+        return <Clock className="mr-1 h-3 w-3" />;
+      case "REPROVADO":
+        return <XCircle className="mr-1 h-3 w-3" />;
+    }
+  };
+
+  const formattedDate = new Date(reserva.data).toLocaleDateString("pt-BR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  // Placeholder for time and room as they are not in the Reserva type
+  const time = reserva.data.split("T")[1] || "Indisponível";
+
 
   return (
     <Card className="border-gray-800 bg-gray-950">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl text-white">{date}</CardTitle>
-          <Badge variant={getStatusVariant()} className={cn("capitalize", status === "concluida" && "text-white")}>
+          <CardTitle className="text-xl text-white">{formattedDate}</CardTitle>
+          <Badge variant={getStatusVariant()} className={cn("capitalize", reserva.status === "APROVADO", getStatusColor())}>
             {getStatusIcon()}
-            {status}
+            {reserva.status.toLowerCase()}
           </Badge>
         </div>
-        <CardDescription>Sala {room}</CardDescription>
+        {/* <CardDescription>Sala {room}</CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-6 text-sm text-gray-300">
@@ -76,11 +87,11 @@ export default function ReservationCard({
           </div>
           <div className="flex items-center">
             <Users className="mr-2 h-4 w-4" />
-            <span>{guests} pessoas</span>
+            <span>{reserva.qnt_pessoas} pessoas</span>
           </div>
         </div>
       </CardContent>
-      {(status === "confirmada" || status === "pendente") && (
+      {(reserva.status === "APROVADO" || reserva.status === "PENDENTE") && (new Date(reserva.data).getTime() > Date.now()) && (
         <CardFooter className="border-t border-gray-800 pt-4">
           <Button variant="destructive" size="sm">
             <XCircle className="mr-2 h-4 w-4" />

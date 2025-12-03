@@ -1,18 +1,9 @@
-export type CreateReserva = {
-  cpf: string;
-  date: string; // ISO date string
-  time: string;
-  guests: number;
-};
+import { Sala } from "./sala";
 
-export type ReservaBackend = {
-  id: number;
+export type Reserva = {
+  cpf: string;
   data: string;
-  cpf: string;
+  id: number;
   qnt_pessoas: number;
-  status: "APROVADO" | "REPROVADO" | "PENDENTE";
-};
-
-export type UpdateReserva = {
   status: "APROVADO" | "REPROVADO" | "PENDENTE";
 };

@@ -44,7 +44,7 @@ export default function PerfilPage() {
             }}
           />
 
-          <ReservationsSection />
+          <ReservationsSection reservas={user.reservas} />
         </div>
       </main>
     </div>

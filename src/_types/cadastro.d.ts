@@ -1,3 +1,5 @@
+import { Reserva } from "./reserva";
+
 export type SignUpData = {
   cpf: string;
   email: string;
@@ -15,6 +17,7 @@ export type BackendUser = {
   telefone: number;
   email: string;
   role: "USER" | "ADMIN";
+  reservas: Reserva[];
 };
 
 export type UpdateCadastroData = Partial<Omit<BackendUser, "idCadastro">>;

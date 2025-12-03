@@ -22,8 +22,8 @@ import { TabsContent } from "@/components/ui/tabs";
 import { Lock, User } from "lucide-react"; // Using User icon for CPF
 
 const signInSchema = z.object({
-  cpf: z.string().min(11, {
-    message: "Por favor, insira um CPF válido.",
+  email: z.string().email({
+    message: "Por favor, insira um e-mail válido.",
   }),
   password: z.string().min(1, {
     message: "A senha é obrigatória.",
@@ -35,7 +35,7 @@ export default function SignIn() {
   const signInForm = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      cpf: "",
+      email: "",
       password: "",
     },
   });
@@ -47,7 +47,7 @@ export default function SignIn() {
     });
 
     if (result?.error) {
-      toast.error("CPF ou senha inválidos.", {
+      toast.error("E-mail ou senha inválidos.", {
         description: "Por favor, verifique seus dados e tente novamente.",
       });
       return;
@@ -73,15 +73,15 @@ export default function SignIn() {
             >
               <FormField
                 control={signInForm.control}
-                name="cpf"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-400">CPF</FormLabel>
+                    <FormLabel className="text-gray-400">E-mail</FormLabel>
                     <FormControl>
                       <div className="relative text-gray-400">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
                         <Input
-                          placeholder="000.000.000-00"
+                          placeholder="seu@email.com"
                           {...field}
                           className="pl-10"
                         />

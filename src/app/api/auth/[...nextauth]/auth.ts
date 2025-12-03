@@ -44,7 +44,7 @@ export const nextAuthOptions: NextAuthOptions = {
               email: backendResponse.user.email, // Backend envia minúsculo 'email'
               role: backendResponse.user.role, // Backend envia minúsculo 'role'
               cpf: backendResponse.user.cpf,
-              phone: backendResponse.user.telefone
+              phone: backendResponse.user.telefone,
             };
           }
 
@@ -66,18 +66,20 @@ export const nextAuthOptions: NextAuthOptions = {
   // CORREÇÃO 2: Adicionar callbacks para persistir os dados na sessão
   callbacks: {
     async jwt({ token, user }) {
-      // O 'user' só existe na primeira vez que o token é criado (login)
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.cpf = user.cpf;
+        token.phone = user.phone;
       }
       return token;
     },
     async session({ session, token }) {
-      // Passa os dados do token para a sessão do frontend
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as "USER" | "ADMIN";
+        session.user.cpf = token.cpf as string;
+        session.user.phone = token.phone as string;
       }
       return session;
     },

@@ -80,12 +80,12 @@ export default function ReservasPage() {
       combinedDate.setHours(hours, minutes);
 
       const payload: CreateReserva = {
-        name: values.name,
+        // name: values.name,
         cpf: values.cpf.replace(/\D/g, ""), // Remove non-digit characters
-        phone: values.phone.replace(/\D/g, ""), // Remove non-digit characters
+        // phone: values.phone.replace(/\D/g, ""), // Remove non-digit characters
         date: combinedDate.toISOString(),
         time: values.time,
-        guests: values.guests,
+        guests: Number(values.guests),
       };
 
       await createReserva.mutateAsync(payload, {

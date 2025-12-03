@@ -1,5 +1,6 @@
 "use client";
 
+import { CreateReserva } from "@/_types/reserva";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCreateReserva } from "@/hooks/react-query/reservas/use-create-reserva";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,24 +29,38 @@ const formSchema = z.object({
     .min(11, "CPF deve ter 11 caracteres")
     .max(11, "CPF deve ter 11 caracteres"),
   data: z.string().min(1, "Data é obrigatória"),
-  qnt_pessoas: z.coerce.number().min(1, "Pelo menos uma pessoa"),
+  guests: z.coerce.number().min(1, "Pelo menos uma pessoa"),
   status: z.enum(["PENDENTE", "APROVADO", "REPROVADO"]),
 });
 
 export function CreateReservationForm() {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema as any),
     defaultValues: {
       cpf: "",
       data: "",
-      qnt_pessoas: 1,
+      guests: 1,
       status: "PENDENTE",
     },
   });
 
+  const { mutate: createReserva, isPending } = useCreateReserva();
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Implement reservation creation
-    console.log(values);
+    const [date, time] = values.data.split("T");
+
+    const payload: CreateReserva = {
+      cpf: values.cpf.replace(/\D/g, ""), // Remove non-digit characters
+      date,
+      time,
+      guests: values.guests,
+    };
+
+    createReserva(payload, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
   }
 
   return (
@@ -78,7 +94,7 @@ export function CreateReservationForm() {
         />
         <FormField
           control={form.control}
-          name="qnt_pessoas"
+          name="guests"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Quantidade de Pessoas</FormLabel>
@@ -111,7 +127,9 @@ export function CreateReservationForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Criar Reserva</Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Criando..." : "Criar Reserva"}
+        </Button>
       </form>
     </Form>
   );

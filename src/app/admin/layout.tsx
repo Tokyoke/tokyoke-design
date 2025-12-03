@@ -8,13 +8,22 @@ import {
   Salad,
   Users,
 } from "lucide-react";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { nextAuthOptions } from "../api/auth/[...nextauth]/auth";
+import { redirect } from "next/navigation";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(nextAuthOptions)
+
+  if (!session?.user || session?.user?.role !== "ADMIN") {
+    redirect('/');
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-black text-white">
       <aside className="sticky top-0 h-screen w-64 border-r border-gray-800 bg-gray-950 p-4 flex flex-col">
@@ -30,7 +39,7 @@ export default function AdminLayout({
             variant="ghost"
             className="justify-start text-base data-[active=true]:bg-gray-800 data-[active=true]:text-red-400"
             asChild
-            // Implementar lógica de rota ativa (data-[active=true])
+          // Implementar lógica de rota ativa (data-[active=true])
           >
             <Link href="/admin">
               <Home className="mr-2 h-5 w-5" />

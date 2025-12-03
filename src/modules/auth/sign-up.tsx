@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
+import { useSignUp } from "@/hooks/react-query/cadastros/use-sign-up";
 import { BadgeInfo, Lock, Mail, Phone, User } from "lucide-react";
 
 const signUpSchema = z.object({
@@ -38,6 +39,7 @@ const signUpSchema = z.object({
 });
 
 export default function SignUp() {
+  const { mutate: signUp, isPending } = useSignUp();
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -50,12 +52,22 @@ export default function SignUp() {
   });
 
   function onSignUpSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log("Dados de Registro:", values);
-    toast.success("Conta criada com sucesso!", {
-      description: `Bem-vindo(a), ${values.name}. Faça o login para continuar.`,
-      className: "bg-gray-800 text-white border-red-500",
-    });
-    signUpForm.reset();
+    signUp(
+      {
+        nome: values.name,
+        telefone: parseInt(values.phone.replace(/\D/g, ""), 10),
+        cpf: values.cpf.replace(/\D/g, ""),
+        email: values.email,
+        senha: values.password,
+        role: "USER",
+      },
+      {
+        onSuccess: () => {
+          signUpForm.reset();
+          toast.success("Conta criada com sucesso! Faça login para continuar.");
+        },
+      }
+    );
   }
   return (
     <TabsContent value="signup" className="mt-6">
@@ -182,8 +194,9 @@ export default function SignUp() {
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700 text-lg"
                 size="lg"
+                disabled={isPending}
               >
-                Criar Conta
+                {isPending ? "Criando..." : "Criar Conta"}
               </Button>
             </form>
           </Form>

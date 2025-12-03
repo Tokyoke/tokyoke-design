@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import { BookTextIcon, HomeIcon, MenuIcon, Music, RefrigeratorIcon, UserIcon } from "lucide-react";
+import { BookTextIcon, HomeIcon, LogOutIcon, MenuIcon, Music, RefrigeratorIcon, UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -35,11 +35,16 @@ export default function Header() {
           </Button>
           {session?.user.role === "ADMIN" &&
             <Button variant="ghost" asChild>
-              <Link href="/Admin" className="hover:text-red-500">Admin</Link>
+              <Link href="/admin" className="hover:text-red-500">Admin</Link>
             </Button>
           }
           {session && (
-            <span className="ml-4">Olá, {session.user?.name}</span>
+            <span className="ml-12">Olá, {session.user?.name}</span>
+          )}
+          {session && (
+            <Button variant="default" size={"icon-sm"} className="bg-white" onClick={() => signOut()}>
+              <LogOutIcon size={16} className="text-red-500" />
+            </Button>
           )}
         </nav>
         <DropdownMenu>

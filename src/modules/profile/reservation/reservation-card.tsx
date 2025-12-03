@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, History, Users, XCircle } from "lucide-react";
 import { Reserva } from "@/_types/reserva";
+import { useUpdateReserva } from "@/hooks/react-query/reservas/use-update-reserva";
 
 type ReservationStatus = "PENDENTE" | "CONFIRMADA" | "CANCELADA" | "CONCLUIDA";
 
@@ -56,6 +57,12 @@ export default function ReservationCard({ reserva }: ReservationCardProps) {
     }
   };
 
+  const updateReserva = useUpdateReserva();
+  
+  const handleUpdateStatus = () => {
+    updateReserva.mutate({ id: reserva.id, data: { status: "REPROVADO" } });
+  };
+
   const formattedDate = new Date(reserva.data).toLocaleDateString("pt-BR", {
     weekday: "long",
     year: "numeric",
@@ -93,7 +100,7 @@ export default function ReservationCard({ reserva }: ReservationCardProps) {
       </CardContent>
       {(reserva.status === "APROVADO" || reserva.status === "PENDENTE") && (new Date(reserva.data).getTime() > Date.now()) && (
         <CardFooter className="border-t border-gray-800 pt-4">
-          <Button variant="destructive" size="sm">
+          <Button variant="destructive" size="sm" onClick={() => alert("Não foi implementado!")}>
             <XCircle className="mr-2 h-4 w-4" />
             Cancelar Reserva
           </Button>

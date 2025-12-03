@@ -1,5 +1,6 @@
 "use client";
 
+import { Reserva } from "@/_types/reserva";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +13,12 @@ import {
 } from "@/components/ui/table";
 import { useUpdateReserva } from "@/hooks/react-query/reservas/use-update-reserva";
 import { cn } from "@/lib/utils";
-import { ReservaBackend } from "@/_types/reserva";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Check, Pencil, Trash2, X } from "lucide-react";
 
 interface ReservasTableProps {
-  reservations: ReservaBackend[];
+  reservations: Reserva[];
 }
 
 const getStatusVariant = (status: string) => {
@@ -34,7 +34,7 @@ const getStatusVariant = (status: string) => {
   }
 };
 
-function TableRowActions({ reserva }: { reserva: ReservaBackend }) {
+function TableRowActions({ reserva }: { reserva: Reserva }) {
   const updateReserva = useUpdateReserva();
 
   const handleUpdateStatus = (status: "APROVADO" | "REPROVADO") => {
@@ -94,7 +94,7 @@ export function ReservasTable({ reservations }: ReservasTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {reservations?.map((res: ReservaBackend) => (
+        {reservations?.map((res: Reserva) => (
           <TableRow key={res.id} className="border-gray-800 hover:bg-gray-900">
             <TableCell className="font-medium text-white">{res.cpf}</TableCell>
             <TableCell className="text-gray-300">

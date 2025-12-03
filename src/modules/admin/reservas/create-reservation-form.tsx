@@ -1,6 +1,5 @@
 "use client";
 
-import { CreateReserva } from "@/_types/reserva";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -49,7 +48,7 @@ export function CreateReservationForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     const [date, time] = values.data.split("T");
 
-    const payload: CreateReserva = {
+    const payload = {
       cpf: values.cpf.replace(/\D/g, ""), // Remove non-digit characters
       date,
       time,
@@ -73,7 +72,7 @@ export function CreateReservationForm() {
             <FormItem>
               <FormLabel>CPF</FormLabel>
               <FormControl>
-                <Input placeholder="___.___.___-__" {...field} />
+                <Input placeholder="___________" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

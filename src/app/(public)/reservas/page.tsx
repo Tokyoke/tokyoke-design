@@ -34,6 +34,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import { CalendarIcon, Clock, Mail, Phone, User, Users } from "lucide-react";
+import { useCreateReserva } from "@/hooks/react-query/reservas/use-create-reserva";
+import { CreateReserva } from "@/_types/reserva";
 import { toast } from "sonner";
 
 const reservationFormSchema = z.object({
@@ -47,18 +49,22 @@ const reservationFormSchema = z.object({
     message: "Por favor, insira um telefone válido com DDD.",
   }),
   date: z.date({
-    error: "Por favor, selecione uma data válida.",
+    error: "Por favor, selecione uma data.",
   }),
   time: z.string({
-    error: "Por favor, selecione um horário válido.",
+    error: "Por favor, selecione um horário.",
   }),
   guests: z.string({
     error: "Por favor, informe o número de convidados.",
   }),
 });
 
+type ReservationFormValues = z.infer<typeof reservationFormSchema>;
+
 export default function ReservasPage() {
-  const form = useForm<z.infer<typeof reservationFormSchema>>({
+  const createReserva = useCreateReserva();
+
+  const form = useForm<ReservationFormValues>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
       name: "",
@@ -67,13 +73,30 @@ export default function ReservasPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof reservationFormSchema>) {
-    console.log("Dados da Reserva:", values);
-    toast("Reserva Enviada!", {
-      description: `Obrigado, ${values.name}. Entraremos em contato em breve para confirmar.`,
-      className: "bg-gray-800 text-white border-red-500",
-    });
-    form.reset();
+  async function onSubmit(values: ReservationFormValues) {
+    try {
+      const [hours, minutes] = values.time.split(":").map(Number);
+      const combinedDate = new Date(values.date);
+      combinedDate.setHours(hours, minutes);
+
+      const payload: CreateReserva = {
+        name: values.name,
+        cpf: values.cpf.replace(/\D/g, ""), // Remove non-digit characters
+        phone: values.phone.replace(/\D/g, ""), // Remove non-digit characters
+        date: combinedDate.toISOString(),
+        time: values.time,
+        guests: values.guests,
+      };
+
+      await createReserva.mutateAsync(payload, {
+        onSuccess: () => {
+          form.reset();
+        },
+      });
+    } catch (error) {
+      console.error("Falha ao criar reserva:", error);
+      // The specific error toast is handled inside the mutation hook
+    }
   }
 
   return (
@@ -292,8 +315,11 @@ export default function ReservasPage() {
                     type="submit"
                     className="w-full bg-red-600 hover:bg-red-700 text-lg"
                     size="lg"
+                    disabled={createReserva.isPending}
                   >
-                    Confirmar Pré-Reserva
+                    {createReserva.isPending
+                      ? "Enviando..."
+                      : "Confirmar Pré-Reserva"}
                   </Button>
                 </form>
               </Form>

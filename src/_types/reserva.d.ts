@@ -7,17 +7,14 @@ export type CreateReserva = {
   guests: string;
 };
 
-export type ReservaCompleta = {
-  idReserva: number;
-  Data: string; // ISO DateTime string
-  Qnt_de_pessoas: number;
-  status: "pendente" | "confirmada" | "cancelada" | "concluida";
-  cadastro: {
-    Nome: string;
-    Telefone: string;
-  };
+export type ReservaBackend = {
+  id: number;
+  data: string;
+  cpf: string;
+  qnt_pessoas: number;
+  status: "APROVADO" | "REPROVADO" | "PENDENTE";
 };
 
 export type UpdateReserva = {
-  status: "pendente" | "confirmada" | "cancelada" | "concluida";
+  status: "APROVADO" | "REPROVADO" | "PENDENTE";
 };

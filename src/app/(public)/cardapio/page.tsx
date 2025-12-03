@@ -72,7 +72,7 @@ export default function CardapioPage() {
                 </h2>
                 <div className="rounded-lg border border-gray-800 bg-gray-950 p-6">
                   {category.itens?.map((item, index) => (
-                    <div key={item.idItem}>
+                    <div key={item.id}>
                       <MenuItem
                         name={item.nome}
                         description={item.descricao}

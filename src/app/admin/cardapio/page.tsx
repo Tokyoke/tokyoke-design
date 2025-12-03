@@ -92,7 +92,7 @@ export default function AdminCardapioPage() {
   useEffect(() => {
     if (editingItem) {
       form.reset({
-        id: editingItem.idItem.toString(),
+        id: editingItem.id.toString(),
         name: editingItem.nome,
         description: editingItem.descricao,
         price: editingItem.valor,
@@ -117,7 +117,7 @@ export default function AdminCardapioPage() {
     };
 
     if (editingItem) {
-      updateItem.mutate({ id: editingItem.idItem.toString(), data: itemData });
+      updateItem.mutate({ id: editingItem.id.toString(), data: itemData });
     } else {
       createItem.mutate(itemData, {
         onSuccess: () => {
@@ -145,8 +145,16 @@ export default function AdminCardapioPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    deleteItem.mutate(id.toString());
+  const handleDelete = (item: Item) => {
+    deleteItem.mutate(item.id.toString(), {
+      onSuccess: () => {
+        toast.success("Item deletado com sucesso");
+      },
+      onError: (e) => {
+        toast.error("Erro ao deletar item");
+        console.error("Erro ao deletar item:", e);
+      },
+    });
   };
 
   if (isLoading) return <div>Carregando...</div>;
@@ -191,7 +199,7 @@ export default function AdminCardapioPage() {
                   <TableBody>
                     {category.itens?.map((item: Item) => (
                       <TableRow
-                        key={item.idItem}
+                        key={item.id}
                         className="border-gray-800 hover:bg-gray-900"
                       >
                         <TableCell className="font-medium text-white">
@@ -214,7 +222,7 @@ export default function AdminCardapioPage() {
                           <Button
                             variant="destructive"
                             size="icon"
-                            onClick={() => handleDelete(item.idItem)}
+                            onClick={() => handleDelete(item)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

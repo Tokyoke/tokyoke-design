@@ -120,7 +120,7 @@ export default function AdminUsuariosPage() {
                 <TableHead className="text-white">Nome</TableHead>
                 <TableHead className="text-white">Contato</TableHead>
                 <TableHead className="text-white">CPF</TableHead>
-                <TableHead className="text-white">Status</TableHead>
+                {/* <TableHead className="text-white">Status</TableHead> */}
                 <TableHead className="text-right text-white">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -136,7 +136,7 @@ export default function AdminUsuariosPage() {
                   </TableCell>
                   <TableCell className="text-gray-300">{user.phone}</TableCell>
                   <TableCell className="text-gray-300">{user.cpf}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Badge
                       variant={
                         user.status === "ativo" ? "default" : "destructive"
@@ -145,7 +145,7 @@ export default function AdminUsuariosPage() {
                     >
                       {user.status === "ativo" ? "Ativo" : "Bloqueado"}
                     </Badge>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell className="text-right space-x-2">
                     <Button variant="outline" size="icon">
                       <Pencil className="h-4 w-4" />

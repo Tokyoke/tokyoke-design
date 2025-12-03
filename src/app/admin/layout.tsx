@@ -83,7 +83,7 @@ export default async function AdminLayout({
             className="w-full justify-start text-base text-black"
             asChild
           >
-            <Link href="/">
+            <Link href="/" className="text-white">
               <LogOut className="mr-2 h-5 w-5 text-red-500" />
               Voltar ao site
             </Link>

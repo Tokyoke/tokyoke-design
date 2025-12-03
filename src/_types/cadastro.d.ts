@@ -6,3 +6,13 @@ export type SignUpData = {
   senha: string;
   telefone: number;
 };
+
+export type BackendUser = {
+  idCadastro: number;
+  CPF: string;
+  Nome: string;
+  Senha: string;
+  Telefone: number;
+  Email: string;
+  Role: "USER" | "ADMIN";
+};

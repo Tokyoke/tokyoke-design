@@ -9,10 +9,12 @@ export type SignUpData = {
 
 export type BackendUser = {
   idCadastro: number;
-  CPF: string;
-  Nome: string;
-  Senha: string;
-  Telefone: number;
-  Email: string;
-  Role: "USER" | "ADMIN";
+  cpf: string;
+  nome: string;
+  senha: string;
+  telefone: number;
+  email: string;
+  role: "USER" | "ADMIN";
 };
+
+export type UpdateCadastroData = Partial<Omit<BackendUser, "idCadastro">>;

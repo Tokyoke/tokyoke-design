@@ -1,14 +1,35 @@
-import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/auth";
+"use client";
+
 import PersonalInfos from "@/modules/profile/personal-infos";
 import ReservationsSection from "@/modules/profile/reservation/section";
-import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { useGetCadastroById } from "@/hooks/react-query/cadastros/use-get-by-id";
+import { useEffect } from "react";
 
-export default async function PerfilPage() {
-  const session = await getServerSession(nextAuthOptions)
+export default function PerfilPage() {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
 
-  if (!session?.user) {
-    redirect('/auth');
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useGetCadastroById(userId as string);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/auth");
+    }
+  }, [status]);
+
+  if (status === "loading" || isLoading) {
+    return <div>Carregando...</div>;
+  }
+
+  if (isError || !user) {
+    // Optionally, redirect or show a more specific error message
+    return <div>Erro ao carregar os dados do usuário.</div>;
   }
 
   return (
@@ -17,9 +38,9 @@ export default async function PerfilPage() {
         <div className="container mx-auto max-w-4xl px-4 md:px-6">
           <PersonalInfos
             user={{
-              name: "João Silva",
-              phone: "(11) 91234-5678",
-              cpf: "123.456.789-00",
+              name: user.nome,
+              phone: user.telefone.toString(),
+              cpf: user.cpf,
             }}
           />
 

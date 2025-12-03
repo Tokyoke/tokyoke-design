@@ -13,7 +13,7 @@
 //     categoria = relationship("Categoria", back_populates="itens")
 
 type Item = {
-  idItem: number;
+  id: number;
   nome: string;
   valor: number;
   descricao: string;

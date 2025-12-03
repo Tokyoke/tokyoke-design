@@ -4,3 +4,7 @@ type Categorie = {
   quantidade: number;
   itens?: Item[];
 };
+
+type CreateCategorie = {
+  titulo: string;
+};

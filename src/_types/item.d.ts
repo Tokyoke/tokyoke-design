@@ -18,3 +18,12 @@ type Item = {
   valor: number;
   descricao: string;
 };
+
+type CreateItem = {
+  Nome: string;
+  Valor: number;
+  Descricao: string;
+  Categoria_idCategoria: number;
+};
+
+type UpdateItem = Partial<CreateItem>;

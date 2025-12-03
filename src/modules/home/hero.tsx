@@ -15,7 +15,7 @@ export default function Hero() {
           <Button asChild size="lg" className="bg-red-600 hover:bg-red-700">
             <Link href="/reservas">Fazer Reserva</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="text-black">
+          <Button asChild size="lg" variant="outline" className="text-white">
             <Link href="/cardapio">Ver Cardápio</Link>
           </Button>
         </div>

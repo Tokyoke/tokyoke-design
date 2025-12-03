@@ -6,11 +6,15 @@ export const nextAuthOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "email", type: "text" },
+        cpf: { label: "cpf", type: "text" },
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
         try {
+          if (!credentials?.cpf || !credentials?.password) {
+            return null;
+          }
+
           const signInUrl = `${process.env.API_URL}/auth/sign-in`;
 
           const response = await fetch(signInUrl, {
@@ -18,7 +22,10 @@ export const nextAuthOptions: NextAuthOptions = {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(credentials),
+            body: JSON.stringify({
+              cpf: credentials.cpf,
+              password: credentials.password,
+            }),
           });
 
           if (!response.ok) {
@@ -30,10 +37,13 @@ export const nextAuthOptions: NextAuthOptions = {
           console.log("Backend response:", backendResponse);
 
           if (backendResponse && backendResponse.token && backendResponse.user) {
+            // Adapt the backend user object to what NextAuth expects
+            // Backend user: idCadastro, Nome, CPF, Endereco
+            // NextAuth user: id, name, email
             return {
-              id: backendResponse.user.id,
-              name: backendResponse.user.name,
-              email: backendResponse.user.email,
+              id: backendResponse.user.idCadastro,
+              name: backendResponse.user.Nome,
+              email: backendResponse.user.CPF, // Using CPF as email
               token: backendResponse.token,
             };
           }
@@ -47,7 +57,7 @@ export const nextAuthOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/auth", // Assuming the login page is at /auth
   },
   session: {
     strategy: "jwt",
@@ -60,7 +70,7 @@ export const nextAuthOptions: NextAuthOptions = {
         token.user = {
           id: user.id,
           name: user.name,
-          email: user.email,
+          email: user.email, // This will be the CPF
         };
       }
       return token;
@@ -69,7 +79,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (token.user) {
         session.user.id = token.user.id;
         session.user.name = token.user.name;
-        session.user.email = token.user.email;
+        session.user.email = token.user.email; // This will be the CPF
       }
       if (token.accessToken) {
         session.accessToken = token.accessToken;
@@ -78,5 +88,3 @@ export const nextAuthOptions: NextAuthOptions = {
     },
   },
 };
-
-// console.log("NEXTAUTH_SECRET:", process.env.NEXTAUTH_SECRET);

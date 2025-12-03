@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,51 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetAllReservas } from "@/hooks/react-query/reservas/use-get-all-reservas";
+import { useUpdateReserva } from "@/hooks/react-query/reservas/use-update-reserva";
 import { cn } from "@/lib/utils";
-import { Calendar, Check, Clock, History, Phone, X } from "lucide-react";
-
-const allReservations = [
-  {
-    id: 1,
-    name: "Ana Costa",
-    phone: "(11) 98888-1111",
-    date: "26/10/2025 - 20:00",
-    guests: 6,
-    status: "pendente",
-  },
-  {
-    id: 2,
-    name: "Bruno Lima",
-    phone: "(21) 97777-2222",
-    date: "26/10/2025 - 21:00",
-    guests: 2,
-    status: "pendente",
-  },
-  {
-    id: 3,
-    name: "Carlos Silva",
-    phone: "(11) 96666-3333",
-    date: "25/10/2025 - 19:00",
-    guests: 4,
-    status: "confirmada",
-  },
-  {
-    id: 4,
-    name: "Daniela Alves",
-    phone: "(31) 95555-4444",
-    date: "25/10/2025 - 22:00",
-    guests: 8,
-    status: "confirmada",
-  },
-  {
-    id: 5,
-    name: "Eduardo Reis",
-    phone: "(41) 94444-5555",
-    date: "24/10/2025 - 20:00",
-    guests: 5,
-    status: "concluida",
-  },
-];
+import { ReservaCompleta } from "@/_types/reserva";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Calendar, Check, Clock, History, X } from "lucide-react";
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -72,12 +36,31 @@ const getStatusVariant = (status: string) => {
 };
 
 export default function AdminReservasPage() {
+  const {
+    data: allReservations,
+    isLoading,
+    isError,
+  } = useGetAllReservas();
+  const updateReserva = useUpdateReserva();
+
+  const handleUpdateStatus = (
+    id: number,
+    status: "confirmada" | "cancelada"
+  ) => {
+    updateReserva.mutate({ id, data: { status } });
+  };
+
   const renderTable = (statusFilter?: string) => {
     const reservations = statusFilter
-      ? allReservations.filter((r) => r.status === statusFilter)
-      : allReservations.filter(
+      ? allReservations?.filter((r) => r.status === statusFilter)
+      : allReservations?.filter(
           (r) => r.status === "pendente" || r.status === "confirmada"
         );
+
+    if (isLoading) return <p>Carregando reservas...</p>;
+    if (isError) return <p>Erro ao carregar as reservas.</p>;
+    if (!reservations || reservations.length === 0)
+      return <p>Nenhuma reserva encontrada.</p>;
 
     return (
       <Table>
@@ -92,21 +75,32 @@ export default function AdminReservasPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {reservations.map((res) => (
+          {reservations.map((res: ReservaCompleta) => (
             <TableRow
-              key={res.id}
+              key={res.idReserva}
               className="border-gray-800 hover:bg-gray-900"
             >
               <TableCell className="font-medium text-white">
-                {res.name}
+                {res.cadastro.Nome}
               </TableCell>
-              <TableCell className="text-gray-300">{res.phone}</TableCell>
-              <TableCell className="text-gray-300">{res.date}</TableCell>
-              <TableCell className="text-gray-300">{res.guests}</TableCell>
+              <TableCell className="text-gray-300">
+                {res.cadastro.Telefone}
+              </TableCell>
+              <TableCell className="text-gray-300">
+                {format(new Date(res.Data), "dd/MM/yyyy - HH:mm", {
+                  locale: ptBR,
+                })}
+              </TableCell>
+              <TableCell className="text-gray-300">
+                {res.Qnt_de_pessoas}
+              </TableCell>
               <TableCell>
                 <Badge
                   variant={getStatusVariant(res.status)}
-                  className={cn("capitalize", res.status === "concluida" && "text-white")}
+                  className={cn(
+                    "capitalize",
+                    res.status === "concluida" && "text-white"
+                  )}
                 >
                   {res.status}
                 </Badge>
@@ -118,16 +112,34 @@ export default function AdminReservasPage() {
                       variant="outline"
                       size="sm"
                       className="border-green-500 text-green-500 hover:bg-green-900 hover:text-green-400"
+                      onClick={() =>
+                        handleUpdateStatus(res.idReserva, "confirmada")
+                      }
+                      disabled={updateReserva.isPending}
                     >
                       <Check className="mr-1 h-4 w-4" /> Aprovar
                     </Button>
-                    <Button variant="destructive" size="sm">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() =>
+                        handleUpdateStatus(res.idReserva, "cancelada")
+                      }
+                      disabled={updateReserva.isPending}
+                    >
                       <X className="mr-1 h-4 w-4" /> Cancelar
                     </Button>
                   </>
                 )}
                 {res.status === "confirmada" && (
-                  <Button variant="destructive" size="sm">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() =>
+                      handleUpdateStatus(res.idReserva, "cancelada")
+                    }
+                    disabled={updateReserva.isPending}
+                  >
                     <X className="mr-1 h-4 w-4" /> Cancelar
                   </Button>
                 )}
@@ -148,7 +160,6 @@ export default function AdminReservasPage() {
     <Card className="border-gray-800 bg-gray-950">
       <CardContent className="pt-6">
         <Tabs defaultValue="proximas" className="w-full">
-          {/* Abas de Filtro */}
           <TabsList className="mb-4 bg-gray-900">
             <TabsTrigger
               value="proximas"
@@ -171,7 +182,9 @@ export default function AdminReservasPage() {
           </TabsList>
 
           <TabsContent value="proximas">{renderTable()}</TabsContent>
-          <TabsContent value="pendentes">{renderTable("pendente")}</TabsContent>
+          <TabsContent value="pendentes">
+            {renderTable("pendente")}
+          </TabsContent>
           <TabsContent value="historico">
             {renderTable("concluida")}
           </TabsContent>

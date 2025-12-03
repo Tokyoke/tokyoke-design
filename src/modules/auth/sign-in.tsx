@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,11 +19,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import { Lock, Mail } from "lucide-react";
+import { Lock, User } from "lucide-react"; // Using User icon for CPF
 
 const signInSchema = z.object({
-  email: z.string().email({
-    message: "Por favor, insira um e-mail válido.",
+  cpf: z.string().min(11, {
+    message: "Por favor, insira um CPF válido.",
   }),
   password: z.string().min(1, {
     message: "A senha é obrigatória.",
@@ -29,21 +31,30 @@ const signInSchema = z.object({
 });
 
 export default function SignIn() {
+  const router = useRouter();
   const signInForm = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      cpf: "",
       password: "",
     },
   });
 
-  function onSignInSubmit(values: z.infer<typeof signInSchema>) {
-    console.log("Dados de Login:", values);
-    toast.success("Login efetuado com sucesso!", {
-      description: `Bem-vindo de volta!`,
-      className: "bg-gray-800 text-white border-red-500",
+  async function onSignInSubmit(values: z.infer<typeof signInSchema>) {
+    const result = await signIn("credentials", {
+      ...values,
+      redirect: false,
     });
-    signInForm.reset();
+
+    if (result?.error) {
+      toast.error("CPF ou senha inválidos.", {
+        description: "Por favor, verifique seus dados e tente novamente.",
+      });
+      return;
+    }
+
+    toast.success("Login efetuado com sucesso!");
+    router.replace("/"); // Redirect to home page after successful login
   }
 
   return (
@@ -62,15 +73,15 @@ export default function SignIn() {
             >
               <FormField
                 control={signInForm.control}
-                name="email"
+                name="cpf"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-400">E-mail</FormLabel>
+                    <FormLabel className="text-gray-400">CPF</FormLabel>
                     <FormControl>
                       <div className="relative text-gray-400">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
                         <Input
-                          placeholder="seu@email.com"
+                          placeholder="000.000.000-00"
                           {...field}
                           className="pl-10"
                         />
@@ -105,8 +116,9 @@ export default function SignIn() {
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700 text-lg"
                 size="lg"
+                disabled={signInForm.formState.isSubmitting}
               >
-                Entrar
+                {signInForm.formState.isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </form>
           </Form>

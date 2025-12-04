@@ -1,6 +1,6 @@
 "use client";
 
-import { Reserva } from "@/_types/reserva";
+// import { Reserva } from "@/_types/reserva";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

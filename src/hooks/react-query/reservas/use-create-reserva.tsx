@@ -1,9 +1,9 @@
 import { api } from "@/config/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CreateReserva } from "@/_types/reserva";
+// import { CreateReserva } from "@/_types/reserva";
 
-export const createReservaFn = async (data: CreateReserva) => {
+export const createReservaFn = async (data: any) => {
   // The user cancelled the previous attempt to configure a proxy,
   // so I will assume the backend is configured for CORS.
   // The API endpoint is /reservas

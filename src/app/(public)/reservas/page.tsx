@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 
 import { CalendarIcon, Clock, Mail, Phone, User, Users } from "lucide-react";
 import { useCreateReserva } from "@/hooks/react-query/reservas/use-create-reserva";
-import { CreateReserva } from "@/_types/reserva";
+// import { CreateReserva } from "@/_types/reserva";
 import { toast } from "sonner";
 
 const reservationFormSchema = z.object({
@@ -79,7 +79,7 @@ export default function ReservasPage() {
       const combinedDate = new Date(values.date);
       combinedDate.setHours(hours, minutes);
 
-      const payload: CreateReserva = {
+      const payload: any = {
         // name: values.name,
         cpf: values.cpf.replace(/\D/g, ""), // Remove non-digit characters
         // phone: values.phone.replace(/\D/g, ""), // Remove non-digit characters

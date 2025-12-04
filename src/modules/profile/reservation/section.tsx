@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, History } from "lucide-react";
 import ReservationCard from "@/modules/profile/reservation/reservation-card";
-import { Reserva } from "@/_types/reserva";
+// import { Reserva } from "@/_types/reserva";
 
 interface ReservationsSectionProps {
   reservas: Reserva[];

@@ -12,18 +12,18 @@
 //     # Relacionamento
 //     categoria = relationship("Categoria", back_populates="itens")
 
-export type Item = {
+type Item = {
   id: number;
   nome: string;
   valor: number;
   descricao: string;
 };
 
-export type CreateItem = {
+type CreateItem = {
   Nome: string;
   Valor: number;
   Descricao: string;
   Categoria_idCategoria: number;
 };
 
-export type UpdateItem = Partial<CreateItem>;
+type UpdateItem = Partial<CreateItem>;

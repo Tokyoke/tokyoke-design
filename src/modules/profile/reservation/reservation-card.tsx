@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, History, Users, XCircle } from "lucide-react";
-import { Reserva } from "@/_types/reserva";
+// import { Reserva } from "@/_types/reserva";
 import { useUpdateReserva } from "@/hooks/react-query/reservas/use-update-reserva";
 
 type ReservationStatus = "PENDENTE" | "CONFIRMADA" | "CANCELADA" | "CONCLUIDA";

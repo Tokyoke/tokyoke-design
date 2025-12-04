@@ -1,8 +1,8 @@
 import { api } from "@/config/api/client";
 import { useQuery } from "@tanstack/react-query";
-import { ReservaBackend } from "@/_types/reserva";
+// import { Reserva } from "@/_types/reserva";
 
-export const getAllReservasFn = async (): Promise<ReservaBackend[]> => {
+export const getAllReservasFn = async (): Promise<Reserva[]> => {
   const response = await api.get("/reservas/");
   return response.data;
 };

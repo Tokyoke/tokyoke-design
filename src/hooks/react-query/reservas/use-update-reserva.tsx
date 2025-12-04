@@ -1,14 +1,14 @@
 import { api } from "@/config/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { UpdateReserva } from "@/_types/reserva";
+// import { UpdateReserva } from "@/_types/reserva";
 
 export const updateReservaFn = async ({
   id,
   data,
 }: {
   id: number;
-  data: UpdateReserva;
+  data: Partial<Reserva>;
 }) => {
   const response = await api.put(`/reservas/${id}`, data);
   return response.data;

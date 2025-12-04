@@ -3,10 +3,14 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        // Esta regra pega /api/auth e garante que ela NÃO seja reescrita (opcional se o Next.js já priorizar o filesystem)
-        // Mas o jeito mais fácil é fazer o rewrite do backend IGNORAR o auth
-        source: "/api/:path((?!auth).*)", // Regex: pega tudo em /api, MENOS o que tiver 'auth' logo depois
-        destination: "http://localhost:5000/:path*",
+        // Esta regra pega qualquer requisição que comece com /api
+        // (exceto se tiver 'auth', para não quebrar o NextAuth se ele usar essa rota)
+        source: "/api/:path((?!auth).*)",
+
+        // AQUI ESTÁ A CORREÇÃO:
+        // O Next.js vai receber o pedido em HTTPS e repassar para o seu backend em HTTP.
+        // O navegador nem fica sabendo, então o erro de Mixed Content some.
+        destination: "http://192.241.156.113:5000/:path*",
       },
     ];
   },

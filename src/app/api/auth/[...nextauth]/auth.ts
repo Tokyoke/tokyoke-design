@@ -6,16 +6,16 @@ export const nextAuthOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        cpf: { label: "cpf", type: "text" },
+        email: { label: "email", type: "text" },
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
         try {
-          if (!credentials?.cpf || !credentials?.password) {
+          if (!credentials?.email || !credentials?.password) {
             return null;
           }
 
-          const signInUrl = `${process.env.API_URL}/auth/sign-in`;
+          const signInUrl = "http://127.0.0.1:5000/cadastros/login";
 
           const response = await fetch(signInUrl, {
             method: "POST",
@@ -23,8 +23,8 @@ export const nextAuthOptions: NextAuthOptions = {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              cpf: credentials.cpf,
-              password: credentials.password,
+              email: credentials.email,
+              senha: credentials.password, // Certifique-se que seu back espera 'senha' ou 'password'
             }),
           });
 
@@ -36,15 +36,15 @@ export const nextAuthOptions: NextAuthOptions = {
           const backendResponse = await response.json();
           console.log("Backend response:", backendResponse);
 
-          if (backendResponse && backendResponse.token && backendResponse.user) {
-            // Adapt the backend user object to what NextAuth expects
-            // Backend user: idCadastro, Nome, CPF, Endereco
-            // NextAuth user: id, name, email
+          // CORREÇÃO 1: Mapear exatamente como vem do JSON do backend
+          if (backendResponse && backendResponse.user) {
             return {
-              id: backendResponse.user.idCadastro,
-              name: backendResponse.user.Nome,
-              email: backendResponse.user.CPF, // Using CPF as email
-              token: backendResponse.token,
+              id: String(backendResponse.user.id), // Converta ID para string por segurança
+              name: backendResponse.user.name, // Backend envia minúsculo 'name'
+              email: backendResponse.user.email, // Backend envia minúsculo 'email'
+              role: backendResponse.user.role, // Backend envia minúsculo 'role'
+              cpf: backendResponse.user.cpf,
+              phone: backendResponse.user.telefone,
             };
           }
 
@@ -57,32 +57,29 @@ export const nextAuthOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/auth", // Assuming the login page is at /auth
+    signIn: "/auth",
   },
   session: {
     strategy: "jwt",
     maxAge: 12 * 60 * 60, // 12 horas
   },
+  // CORREÇÃO 2: Adicionar callbacks para persistir os dados na sessão
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.token;
-        token.user = {
-          id: user.id,
-          name: user.name,
-          email: user.email, // This will be the CPF
-        };
+        token.id = user.id;
+        token.role = user.role;
+        token.cpf = user.cpf;
+        token.phone = user.phone;
       }
       return token;
     },
-    async session({ session, token }: any) {
-      if (token.user) {
-        session.user.id = token.user.id;
-        session.user.name = token.user.name;
-        session.user.email = token.user.email; // This will be the CPF
-      }
-      if (token.accessToken) {
-        session.accessToken = token.accessToken;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as "USER" | "ADMIN";
+        session.user.cpf = token.cpf as string;
+        session.user.phone = token.phone as string;
       }
       return session;
     },

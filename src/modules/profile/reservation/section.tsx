@@ -1,8 +1,28 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, History } from "lucide-react";
 import ReservationCard from "@/modules/profile/reservation/reservation-card";
+import { Reserva } from "@/_types/reserva";
 
-export default function ReservationsSection() {
+interface ReservationsSectionProps {
+  reservas: Reserva[];
+}
+
+export default function ReservationsSection({ reservas }: ReservationsSectionProps) {
+  const now = new Date();
+
+  const upcomingReservations = reservas.filter(
+    (reserva) =>
+      new Date(reserva.data) >= now &&
+      (reserva.status === "PENDENTE" || reserva.status === "APROVADO")
+  );
+
+  const historyReservations = reservas.filter(
+    (reserva) =>
+      new Date(reserva.data) < now ||
+      reserva.status === "REPROVADO" ||
+      reserva.status === "APROVADO"
+  );
+
   return (
     <>
       <h1 className="mb-4 text-center text-4xl font-extrabold tracking-tight text-red-500 sm:text-5xl">
@@ -32,39 +52,29 @@ export default function ReservationsSection() {
 
         <TabsContent value="proximas" className="mt-6">
           <div className="space-y-6">
-            <ReservationCard
-              date="Sábado, 08 de Novembro"
-              time="20:00 - 22:00"
-              guests="6"
-              room="M (até 8 pessoas)"
-              status="confirmada"
-            />
-            <ReservationCard
-              date="Sexta, 21 de Novembro"
-              time="19:00 - 21:00"
-              guests="10"
-              room="G (até 15 pessoas)"
-              status="pendente"
-            />
+            {upcomingReservations.length > 0 ? (
+              upcomingReservations.map((reserva) => (
+                <ReservationCard key={reserva.id} reserva={reserva} />
+              ))
+            ) : (
+              <p className="text-center text-gray-400">
+                Nenhuma reserva próxima encontrada.
+              </p>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="historico" className="mt-6">
           <div className="space-y-6">
-            <ReservationCard
-              date="Quinta, 18 de Outubro"
-              time="21:00 - 23:00"
-              guests="4"
-              room="P (até 4 pessoas)"
-              status="concluida"
-            />
-            <ReservationCard
-              date="Sexta, 03 de Outubro"
-              time="20:00 - 22:00"
-              guests="8"
-              room="M (até 8 pessoas)"
-              status="cancelada"
-            />
+            {historyReservations.length > 0 ? (
+              historyReservations.map((reserva) => (
+                (new Date(reserva.data).getTime() < Date.now()) ? <ReservationCard key={reserva.id} reserva={reserva} /> : null
+              ))
+            ) : (
+              <p className="text-center text-gray-400">
+                Nenhuma reserva no histórico encontrada.
+              </p>
+            )}
           </div>
         </TabsContent>
       </Tabs>

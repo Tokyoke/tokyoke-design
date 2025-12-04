@@ -10,7 +10,7 @@ export const updateReservaFn = async ({
   id: number;
   data: UpdateReserva;
 }) => {
-  const response = await api.patch(`/reservas/${id}`, data);
+  const response = await api.put(`/reservas/${id}`, data);
   return response.data;
 };
 

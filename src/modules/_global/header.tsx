@@ -1,16 +1,18 @@
+"use client"
 import { Button } from "@/components/ui/button";
-import { BookTextIcon, HomeIcon, MenuIcon, Music, RefrigeratorIcon, UserIcon } from "lucide-react";
+import { BookTextIcon, HomeIcon, LogOutIcon, MenuIcon, Music, RefrigeratorIcon, UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
+  const { data: session } = useSession();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b text-white bg-black backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -31,6 +33,19 @@ export default function Header() {
           <Button variant="ghost" asChild>
             <Link href="/perfil" className="hover:text-red-500">Perfil</Link>
           </Button>
+          {session?.user.role === "ADMIN" &&
+            <Button variant="ghost" asChild>
+              <Link href="/admin" className="hover:text-red-500">Admin</Link>
+            </Button>
+          }
+          {session && (
+            <span className="ml-12">Olá, {session.user?.name}</span>
+          )}
+          {session && (
+            <Button variant="default" size={"icon-sm"} className="bg-white" onClick={() => signOut()}>
+              <LogOutIcon size={16} className="text-red-500" />
+            </Button>
+          )}
         </nav>
         <DropdownMenu>
           <DropdownMenuTrigger className="md:hidden bg-white p-2 rounded-sm hover:cursor-pointer hover:bg-white/80">

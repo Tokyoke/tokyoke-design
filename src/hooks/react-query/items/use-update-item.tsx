@@ -1,7 +1,7 @@
 import { api } from "@/config/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { UpdateItem } from "@/_types/item";
+// import { UpdateItem } from "@/_types/item";
 
 export const updateItemFn = async ({ id, data }: { id: string; data: UpdateItem }) => {
   const response = await api.put(`/itens/${id}`, data);

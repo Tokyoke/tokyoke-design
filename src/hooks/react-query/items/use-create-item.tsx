@@ -1,7 +1,7 @@
 import { api } from "@/config/api/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CreateItem } from "@/_types/item";
+// import { CreateItem } from "@/_types/item";
 
 export const createItemFn = async (data: CreateItem) => {
   const response = await api.post("/itens", data);
